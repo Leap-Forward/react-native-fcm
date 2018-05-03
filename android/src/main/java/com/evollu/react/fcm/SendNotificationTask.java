@@ -18,25 +18,23 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.RemoteInput;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
-
-import org.json.JSONArray;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLDecoder;
 
 import static com.facebook.react.common.ReactConstants.TAG;
 
 public class SendNotificationTask extends AsyncTask<Void, Void, Void> {
     private static final long DEFAULT_VIBRATION = 300L;
-    
+    protected static String REPLY_ACTION = "REPLY_ACTION";
+    protected static String REPLY_TEXT_LABEL = "REPLY_TEXT_LABEL";
+
     private Context mContext;
     private Bundle bundle;
     private SharedPreferences sharedPreferences;
@@ -229,14 +227,28 @@ public class SendNotificationTask extends AsyncTask<Void, Void, Void> {
 				
 				String clickAction = bundle.getString("click_action");
 				if (clickAction != null) clickAction = URLDecoder.decode( clickAction, "UTF-8" );
-				
+
                 intent.setAction(clickAction);
                 
                 int notificationID = bundle.containsKey("id") ? bundle.getString("id", "").hashCode() : (int) System.currentTimeMillis();
                 PendingIntent pendingIntent = PendingIntent.getActivity(mContext, notificationID, intent,
                                                                         PendingIntent.FLAG_UPDATE_CURRENT);
-                
+
+
+                Intent resultPendingIntent = new Intent(mContext, NotificationBroadcastReceiver.class);
+                resultPendingIntent.setAction(REPLY_ACTION);
+                resultPendingIntent.putExtra("notificationID", notificationID);
+                resultPendingIntent.putExtra("extras", intent.getExtras());
+
+                NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(
+                        R.drawable.ic_launcher,
+                        "Answer message",
+                        PendingIntent.getBroadcast(mContext, 100, resultPendingIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                        .addRemoteInput(new RemoteInput.Builder(REPLY_TEXT_LABEL).setLabel("Answer message").build())
+                        .build();
+
                 notification.setContentIntent(pendingIntent);
+                notification.addAction(replyAction);
 
                 if (bundle.containsKey("android_actions")) {
 					String androidActions = bundle.getString("android_actions");
