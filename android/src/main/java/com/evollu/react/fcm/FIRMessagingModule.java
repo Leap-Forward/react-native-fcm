@@ -40,6 +40,7 @@ public class FIRMessagingModule extends ReactContextBaseJavaModule implements Li
     private final static String TAG = FIRMessagingModule.class.getCanonicalName();
     private FIRLocalMessagingHelper mFIRLocalMessagingHelper;
     private BadgeHelper mBadgeHelper;
+    private static ReactApplicationContext context;
 
     public FIRMessagingModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -50,6 +51,7 @@ public class FIRMessagingModule extends ReactContextBaseJavaModule implements Li
         registerTokenRefreshHandler();
         registerMessageHandler();
         registerLocalMessageHandler();
+        context = reactContext;
     }
 
     @Override
@@ -184,9 +186,8 @@ public class FIRMessagingModule extends ReactContextBaseJavaModule implements Li
         promise.resolve(mBadgeHelper.getBadgeCount());
     }
 
-    private void sendEvent(String eventName, Object params) {
-        getReactApplicationContext()
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+    public static void sendEvent(String eventName, Object params) {
+        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(eventName, params);
     }
 

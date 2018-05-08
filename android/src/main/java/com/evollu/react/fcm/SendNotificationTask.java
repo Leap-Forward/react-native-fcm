@@ -23,10 +23,16 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
+
+import org.json.JSONArray;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import static com.facebook.react.common.ReactConstants.TAG;
 
@@ -241,7 +247,7 @@ public class SendNotificationTask extends AsyncTask<Void, Void, Void> {
                 resultPendingIntent.putExtra("extras", intent.getExtras());
 
                 NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(
-                        R.drawable.ic_launcher,
+                        R.mipmap.ic_launcher,
                         "Answer message",
                         PendingIntent.getBroadcast(mContext, 100, resultPendingIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                         .addRemoteInput(new RemoteInput.Builder(REPLY_TEXT_LABEL).setLabel("Answer message").build())

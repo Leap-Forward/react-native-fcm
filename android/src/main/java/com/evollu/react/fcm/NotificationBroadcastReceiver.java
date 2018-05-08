@@ -18,7 +18,10 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
 
     private CharSequence getReplyMessage(Intent intent) {
-        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+        Bundle remoteInput = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
+            remoteInput = RemoteInput.getResultsFromIntent(intent);
+        }
         if (remoteInput != null) {
             return remoteInput.getCharSequence(SendNotificationTask.REPLY_TEXT_LABEL);
         }
@@ -33,6 +36,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
             Bundle bundle = intent.getBundleExtra("extras");
             bundle.putString("_userText", message);
             // Redirect the message to the JS thread
+            Log.d("HEHE", bundle2string(bundle));
             FIRMessagingModule.sendEvent("FCMNotificationReceived", Arguments.fromBundle(bundle));
             ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(notificationID);
         }

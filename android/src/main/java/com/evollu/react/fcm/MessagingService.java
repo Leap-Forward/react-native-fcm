@@ -23,7 +23,7 @@ public class MessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.d(TAG, "Remote message received");
+        Log.d(TAG, "Remote message receiveded");
         Intent i = new Intent("com.evollu.react.fcm.ReceiveNotification");
         i.putExtra("data", remoteMessage);
         handleBadge(remoteMessage);
