@@ -240,6 +240,7 @@ public class SendNotificationTask extends AsyncTask<Void, Void, Void> {
                 PendingIntent pendingIntent = PendingIntent.getActivity(mContext, notificationID, intent,
                                                                         PendingIntent.FLAG_UPDATE_CURRENT);
 
+                notification.setContentIntent(pendingIntent);
 
                 Intent resultPendingIntent = new Intent(mContext, NotificationBroadcastReceiver.class);
                 resultPendingIntent.setAction(REPLY_ACTION);
@@ -252,8 +253,6 @@ public class SendNotificationTask extends AsyncTask<Void, Void, Void> {
                         PendingIntent.getBroadcast(mContext, 100, resultPendingIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                         .addRemoteInput(new RemoteInput.Builder(REPLY_TEXT_LABEL).setLabel("Answer message").build())
                         .build();
-
-                notification.setContentIntent(pendingIntent);
                 notification.addAction(replyAction);
 
                 if (bundle.containsKey("android_actions")) {
