@@ -12,6 +12,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableArray;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import com.google.firebase.FirebaseApp;
 
@@ -41,6 +43,7 @@ public class FIRMessagingModule extends ReactContextBaseJavaModule implements Li
     private FIRLocalMessagingHelper mFIRLocalMessagingHelper;
     private BadgeHelper mBadgeHelper;
     private static ReactApplicationContext context;
+    private static String NOTIFICATION_ACTION_TEXT_INPUT = "UNNotificationActionTypeTextInput";
 
     public FIRMessagingModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -217,6 +220,26 @@ public class FIRMessagingModule extends ReactContextBaseJavaModule implements Li
             message.addData(key, value);
         }
         fm.send(message.build());
+    }
+
+    @ReactMethod
+    public void setNotificationCategories(ReadableArray notificationCategories) {
+        Set<String> replyNotificationIDs = new TreeSet<>();
+        for (int i = 0; i < notificationCategories.size(); i++) {
+            ReadableMap category = notificationCategories.getMap(i);
+            if (category.hasKey("actions")) {
+                ReadableArray actions = category.getArray("actions");
+                for (int j = 0; j < actions.size(); j++) {
+                    ReadableMap action = actions.getMap(j);
+                    String type = action.getString("type");
+                    String id = action.getString("id");
+                    if (type.equals(NOTIFICATION_ACTION_TEXT_INPUT)) {
+                        replyNotificationIDs.add(id);
+                    }
+                }
+            }
+        }
+        mFIRLocalMessagingHelper.setReplyNotificationIDs(replyNotificationIDs);
     }
 
     private String getStringFromReadableMap(ReadableMap map, String key) throws Exception {

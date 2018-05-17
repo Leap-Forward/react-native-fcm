@@ -17,11 +17,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class FIRLocalMessagingHelper {
     private static final String TAG = FIRLocalMessagingHelper.class.getSimpleName();
     private final static String PREFERENCES_KEY = "ReactNativeSystemNotification";
     private static boolean mIsForeground = false; //this is a hack
+    public final static String REPLY_NOTIFICATION_IDS_KEY = "replyNotificationIDs";
 
     private Context mContext;
     private SharedPreferences sharedPreferences = null;
@@ -29,6 +32,10 @@ public class FIRLocalMessagingHelper {
     public FIRLocalMessagingHelper(Application context) {
         mContext = context;
         sharedPreferences = (SharedPreferences) mContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
+    }
+
+    public void setReplyNotificationIDs(Set<String> replyNotificationIDs) {
+        sharedPreferences.edit().putStringSet(REPLY_NOTIFICATION_IDS_KEY, replyNotificationIDs).apply();
     }
 
     public String getMainActivityClassName() {

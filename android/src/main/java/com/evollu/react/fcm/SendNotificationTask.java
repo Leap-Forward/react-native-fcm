@@ -33,7 +33,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.TreeSet;
 
+import static com.evollu.react.fcm.FIRLocalMessagingHelper.REPLY_NOTIFICATION_IDS_KEY;
 import static com.facebook.react.common.ReactConstants.TAG;
 
 public class SendNotificationTask extends AsyncTask<Void, Void, Void> {
@@ -241,7 +243,9 @@ public class SendNotificationTask extends AsyncTask<Void, Void, Void> {
                         PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-                if (clickAction != null && clickAction.endsWith(".answer")) {
+                if (clickAction != null && sharedPreferences
+                        .getStringSet(REPLY_NOTIFICATION_IDS_KEY, new TreeSet<String>())
+                        .contains(clickAction)) {
                     Intent resultPendingIntent = new Intent(mContext, NotificationBroadcastReceiver.class);
                     resultPendingIntent.setAction(REPLY_ACTION);
                     resultPendingIntent.putExtra("notificationID", notificationID);

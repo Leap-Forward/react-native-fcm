@@ -34,9 +34,9 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
             String message = getReplyMessage(intent).toString();
             int notificationID = intent.getIntExtra("notificationID", 0);
             Bundle bundle = intent.getBundleExtra("extras");
+            // Send the very same item iOS does send, easy to work with that without separate iOS and Android code
             bundle.putString("_userText", message);
             // Redirect the message to the JS thread
-            Log.d("HEHE", bundle2string(bundle));
             FIRMessagingModule.sendEvent("FCMNotificationReceived", Arguments.fromBundle(bundle));
             ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(notificationID);
         }
